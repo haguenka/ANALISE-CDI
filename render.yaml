@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: cdi-tempo-atendimento-qt
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /vnc.html
+    disk:
+      name: cdi-tempo-atendimento-data
+      mountPath: /var/data
+      sizeGB: 2
+    envVars:
+      - key: CDI_DATA_DIR
+        value: /var/data
