@@ -5,6 +5,7 @@ WORKDIR /opt/app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     fluxbox \
+    nginx \
     novnc \
     websockify \
     x11vnc \
@@ -56,11 +57,11 @@ RUN mkdir -p /opt/app/novnc-web \
     && cp -r /usr/share/novnc/. /opt/app/novnc-web/
 
 COPY app /opt/app/app
-COPY web /opt/app/web
+COPY upload_server.py /opt/app/upload_server.py
+COPY nginx.conf.template /opt/app/nginx.conf.template
 COPY start.sh /opt/app/start.sh
 
-RUN cp /opt/app/web/index.html /opt/app/novnc-web/index.html \
-    && chmod +x /opt/app/start.sh
+RUN chmod +x /opt/app/start.sh
 
 EXPOSE 10000
 CMD ["/opt/app/start.sh"]

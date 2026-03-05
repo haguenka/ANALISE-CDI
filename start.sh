@@ -18,12 +18,19 @@ x11vnc -display :99 -forever -shared -rfbport 5900 -nopw -localhost >/tmp/x11vnc
 python /opt/app/app/analise_tempo_atendimento_cdi.py >/tmp/cdi_app.log 2>&1 &
 APP_PID=$!
 
-websockify --web=/opt/app/novnc-web/ "${PORT:-10000}" localhost:5900 >/tmp/novnc.log 2>&1 &
+websockify --web=/opt/app/novnc-web/ 6080 localhost:5900 >/tmp/novnc.log 2>&1 &
 NOVNC_PID=$!
 
+python /opt/app/upload_server.py >/tmp/upload_server.log 2>&1 &
+UPLOAD_PID=$!
+
+sed "s/__PORT__/${PORT:-10000}/g" /opt/app/nginx.conf.template >/tmp/nginx.conf
+nginx -c /tmp/nginx.conf -g 'daemon off;' >/tmp/nginx.log 2>&1 &
+NGINX_PID=$!
+
 cleanup() {
-  kill "${APP_PID}" "${NOVNC_PID}" 2>/dev/null || true
+  kill "${APP_PID}" "${NOVNC_PID}" "${UPLOAD_PID}" "${NGINX_PID}" 2>/dev/null || true
 }
 
 trap cleanup EXIT
-wait -n "${APP_PID}" "${NOVNC_PID}"
+wait -n "${APP_PID}" "${NOVNC_PID}" "${UPLOAD_PID}" "${NGINX_PID}"
