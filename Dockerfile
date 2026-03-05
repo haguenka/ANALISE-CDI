@@ -52,10 +52,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /opt/app/requirements.txt
 RUN pip install --no-cache-dir -r /opt/app/requirements.txt
 
+RUN mkdir -p /opt/app/novnc-web \
+    && cp -r /usr/share/novnc/. /opt/app/novnc-web/
+
 COPY app /opt/app/app
+COPY web /opt/app/web
 COPY start.sh /opt/app/start.sh
 
-RUN chmod +x /opt/app/start.sh
+RUN cp /opt/app/web/index.html /opt/app/novnc-web/index.html \
+    && chmod +x /opt/app/start.sh
 
 EXPOSE 10000
 CMD ["/opt/app/start.sh"]

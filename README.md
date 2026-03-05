@@ -18,7 +18,9 @@ deploy_render_analise_tempo_atendimento_cdi/
 ├── README.md
 ├── render.yaml
 ├── requirements.txt
-└── start.sh
+├── start.sh
+└── web/
+    └── index.html
 ```
 
 ## Publicar
@@ -32,19 +34,7 @@ O `render.yaml` cria um Web Service Docker com disco persistente em `/var/data`.
 
 ## Acesso
 
-Depois do deploy, abra a URL do servico no Render.
-
-Se a pagina inicial nao abrir direto no app, acesse:
-
-```text
-/vnc.html?autoconnect=1&resize=scale
-```
-
-Exemplo:
-
-```text
-https://seu-app.onrender.com/vnc.html?autoconnect=1&resize=scale
-```
+Depois do deploy, abra a URL raiz do servico no Render. A raiz `/` agora redireciona automaticamente para o cliente VNC com autoconnect.
 
 ## Arquivos Excel
 
