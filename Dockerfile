@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     novnc \
     websockify \
     x11vnc \
+    x11-utils \
     xvfb \
     fonts-dejavu-core \
     libasound2 \
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libegl1 \
     libfontconfig1 \
     libgl1 \
+    libgl1-mesa-dri \
     libglib2.0-0 \
     libice6 \
     libnss3 \

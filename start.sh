@@ -6,6 +6,10 @@ export CDI_DATA_DIR="${CDI_DATA_DIR:-/var/data}"
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/runtime-root}"
 export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-xcb}"
 export QT_X11_NO_MITSHM=1
+export QT_OPENGL=software
+export QT_QUICK_BACKEND=software
+export LIBGL_ALWAYS_SOFTWARE=1
+export MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
 export PYTHONUNBUFFERED=1
 
 mkdir -p "${CDI_DATA_DIR}" "${XDG_RUNTIME_DIR}"
@@ -15,7 +19,19 @@ Xvfb :99 -screen 0 1720x1080x24 -ac +extension GLX +render -noreset >/tmp/xvfb.l
 fluxbox >/tmp/fluxbox.log 2>&1 &
 x11vnc -display :99 -forever -shared -rfbport 5900 -nopw -localhost >/tmp/x11vnc.log 2>&1 &
 
-python /opt/app/app/analise_tempo_atendimento_cdi.py >/tmp/cdi_app.log 2>&1 &
+for _ in $(seq 1 30); do
+  if xdpyinfo -display "${DISPLAY}" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+
+if ! xdpyinfo -display "${DISPLAY}" >/dev/null 2>&1; then
+  echo "X display ${DISPLAY} did not become ready"
+  exit 1
+fi
+
+python -X faulthandler -u /opt/app/app/analise_tempo_atendimento_cdi.py 2>&1 | tee /tmp/cdi_app.log &
 APP_PID=$!
 
 websockify --web=/opt/app/novnc-web/ 6080 localhost:5900 >/tmp/novnc.log 2>&1 &
